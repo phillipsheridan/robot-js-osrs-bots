@@ -1,16 +1,13 @@
 var robot = require("robotjs");
 
-// while (true) {
-//   const rand = (Math.floor(Math.random() * 6) + 1) * 0.1 + Math.random();
-//   console.log(rand);
-//   setTimeout(() => {
-//     // robot.moveMouse(1615, 882);
-//     // robot.mouseClick("left", true);
-//     console.log("move to place and click");
-//   }, 3000.0 + rand);
-// }
+// todo use args
 
-function doSomething() {
+// const myArgs = process.argv.slice(2);
+// console.log('myArgs: ', myArgs);
+
+// TODO add as param
+// set moveMouse to where the mouse should go
+function alch_clicks() {
   console.log("time:", new Date());
   robot.moveMouse(1615, 882);
   robot.mouseClick("left", true);
@@ -19,7 +16,7 @@ function doSomething() {
 (function loop() {
   var rand = 3000.0 + (Math.floor(Math.random() * 6) + 1) * Math.random();
   setTimeout(function () {
-    doSomething();
+    alch_clicks();
     loop();
   }, rand);
 })();
