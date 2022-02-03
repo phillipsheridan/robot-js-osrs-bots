@@ -40,14 +40,20 @@ function steal() {
 
   loop(() => {
     robot.moveMouse(...positionStall);
+    console.log("moved mouse");
     robot.mouseClick("left", false);
+    console.log("left clicked");
   }, 3);
 
   loop(() => {
     robot.keyToggle("shift", "down");
+    console.log("toggled shift down");
     robot.moveMouse(...positionItem);
+    console.log("moved mouse");
     robot.mouseClick("left", false);
+    console.log("left clicked");
     robot.keyToggle("shift", "up");
+    console.log("toggled shift up");
   }, 4.5);
 }
 
@@ -62,7 +68,6 @@ function getPosition() {
 function loop(fn, sec) {
   var rand = sec * 1000.0 + (Math.floor(Math.random() * 6) + 1) * Math.random();
   setTimeout(function () {
-    console.log(fn);
     fn();
     loop(fn, sec);
   }, rand);
