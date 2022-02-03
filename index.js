@@ -22,6 +22,8 @@ switch (args[0]) {
     break;
   case "steal":
     steal();
+  default:
+    console.log("invalid args");
 }
 // TODO add as param
 // set moveMouse to where the mouse should go
@@ -32,7 +34,7 @@ function alch() {
 }
 
 function steal() {
-  const positionStall = [873, 555];
+  const positionStall = [869, 552];
 
   const positionItem = [1478, 801];
 
@@ -44,7 +46,7 @@ function steal() {
   loop(() => {
     robot.keyToggle("shift", "down");
     robot.moveMouse(...positionItem);
-    robot.mouseClick("left");
+    robot.mouseClick("left", false);
     robot.keyToggle("shift", "up");
   }, 4.5);
 }
@@ -59,7 +61,6 @@ function getPosition() {
 // loops on a semi-random interval (fn: function to run, sec: seconds)
 function loop(fn, sec) {
   var rand = sec * 1000.0 + (Math.floor(Math.random() * 6) + 1) * Math.random();
-  fn();
   setTimeout(function () {
     console.log(fn);
     fn();
