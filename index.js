@@ -20,6 +20,9 @@ switch (args[0]) {
   case "alch":
     loop(alch, 3);
     break;
+  case "tele-alch":
+    loop(alchTeleCamelot, 3);
+    break;
   case "steal":
     steal();
   default:
@@ -33,8 +36,18 @@ function alch() {
   robot.mouseClick("left", true);
 }
 
+function alchTeleCamelot() {
+  console.log("time:", new Date());
+  robot.moveMouse(1615, 882);
+  robot.mouseClick("left", true);
+  setTimeout(() => {
+    robot.moveMouse(1590, 859);
+    robot.mouseClick("left", false);
+  }, 800);
+}
+
 function steal() {
-  const positionStall = [869, 552];
+  const positionStall = [589, 605];
 
   const positionItem = [1478, 801];
 
