@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const multer_1 = __importDefault(require("multer"));
 const axios_1 = __importDefault(require("axios"));
 const fs_1 = __importDefault(require("fs"));
+require("dotenv/config");
 const app = (0, express_1.default)();
 const upload = (0, multer_1.default)({ dest: 'uploads/' });
 // POST /find-image-center
@@ -22,10 +23,10 @@ app.post('/find-image-center', upload.fields([
         const mainImageBase64 = fs_1.default.readFileSync(mainImagePath, { encoding: 'base64' });
         const subImageBase64 = fs_1.default.readFileSync(subImagePath, { encoding: 'base64' });
         // Prepare Gemini LLM prompt
-        const prompt = `You are given two images. The first image is the main image. The second image can be found inside the main image, possibly at a different scale. Please return the (x, y) coordinates of the center of the second image's location within the main image. Respond with a JSON object: {\n  \"x\": <number>,\n  \"y\": <number>\n}`;
+        const prompt = `You are given two images. The first image is the main image. The second image can be found inside the main image, possibly at a different scale. Please return the (x, y) coordinates (in pixels) of the center of the second image's location within the main image. Also return the width/height of the main image. Respond with a JSON object: {\n  \"x\": <number>,\n  \"y\": <number>,\n  \"width\": <number>,\n  \"height\": <number>}.`;
         // Call Gemini LLM API (user must provide API key)
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY_HERE';
-        const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=' + GEMINI_API_KEY;
+        const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_API_KEY;
         const payload = {
             contents: [
                 {
@@ -35,7 +36,10 @@ app.post('/find-image-center', upload.fields([
                         { inline_data: { mime_type: 'image/png', data: subImageBase64 } }
                     ]
                 }
-            ]
+            ],
+            config: {
+                temperature: 0,
+            },
         };
         const response = await axios_1.default.post(geminiUrl, payload);
         // Clean up uploaded files
@@ -45,7 +49,8 @@ app.post('/find-image-center', upload.fields([
         res.json({ result: response.data });
     }
     catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error processing images:', err.message);
+        res.status(500).json({ error: err });
     }
 });
 const PORT = process.env.PORT || 3000;
