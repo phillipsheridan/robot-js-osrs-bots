@@ -39,9 +39,9 @@ app.post('/find-image-center', upload.fields([
                     ]
                 }
             ],
-            config: {
-                temperature: 0,
-            },
+            // config: {
+            //     temperature: 0,
+            // },
         };
 
         const response = await axios.post(geminiUrl, payload);
