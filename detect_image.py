@@ -27,7 +27,7 @@ def draw(source_path: str, top_left, template_width, template_height, output_pat
     center_x = pt1[0] + template_width // 2
     center_y = pt1[1] + template_height // 2
     cv2.circle(source, (center_x, center_y), 8, (0, 255, 0), -1)
-    cv2.imwrite(output_path, source)
+    # cv2.imwrite(output_path, source)
     return center_x, center_y
 
 

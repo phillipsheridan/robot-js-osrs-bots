@@ -60,7 +60,6 @@ def scan():
 
     def scan_interval():
         screenshot_path = take_screenshot()
-        check_for_stop_condition()
         x, y = pyautogui.position()
         print((x, y))
         screenshot_img = pyautogui.screenshot()
@@ -83,7 +82,7 @@ def scan():
                     if resp.ok:
                         data = resp.json()
                         if "x" in data and "y" in data and "output_image" in data:
-                            print("Template matched. Clicking 'Existing User' button.")
+                            print("Template matched. Clicking thingy.")
                             # Try to get template width/height from output_image filename if possible
                             # But ideally, server.py should return width/height in the response
                             width = data.get("template_width")
@@ -116,20 +115,8 @@ def loop(fn, sec):
 
     while True:
         fn()
-        check_for_stop_condition()
         rand = sec + (random.randint(1, 6) * random.random())
         time.sleep(rand)
-
-
-def check_for_stop_condition():
-    print(STOP_PIXEL_COLOR)
-    print(STOP_POSITION)
-    screenshot = pyautogui.screenshot()
-    pixel_color = screenshot.getpixel(STOP_POSITION)
-    color_hex = "%02x%02x%02x" % pixel_color
-    print("MUSIC BUTTON COLOR:", color_hex)
-    if color_hex == STOP_PIXEL_COLOR:
-        sys.exit()
 
 
 def main():

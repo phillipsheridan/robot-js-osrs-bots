@@ -44,6 +44,7 @@ def detect():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+    # clean up the created files
     return jsonify(
         {
             "x": coords[0],
