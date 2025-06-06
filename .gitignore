@@ -3,3 +3,4 @@
 /dist
 /input-images
 /output-images
+*.pyc
