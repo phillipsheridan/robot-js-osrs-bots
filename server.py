@@ -33,6 +33,14 @@ def detect():
     source_file.save(source_filename)
     template_file.save(template_filename)
 
+    output_filename = None
+    center_x = None
+    center_y = None
+    coords = None
+    template_width = None
+    template_height = None
+    response_data = None
+
     try:
         coords, template_width, template_height = find_image_in_image(
             source_filename, template_filename
@@ -41,12 +49,7 @@ def detect():
         center_x, center_y = draw(
             source_filename, coords, template_width, template_height, output_filename
         )
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-    # clean up the created files
-    return jsonify(
-        {
+        response_data = {
             "x": coords[0],
             "y": coords[1],
             "output_image": output_filename,
@@ -55,7 +58,32 @@ def detect():
             "center_x": center_x,
             "center_y": center_y,
         }
-    )
+    except Exception as e:
+        app.logger.warning(f"Exception occurred: {e}")
+        response_data = {"error": str(e)}
+        return jsonify(response_data), 500
+    finally:
+        # Remove all files in input-images and the output file if it exists
+        try:
+            for f in os.listdir(UPLOAD_FOLDER):
+                app.logger.warning(f"Deleting file: {file_path}")
+
+                file_path = os.path.join(UPLOAD_FOLDER, f)
+
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+        except Exception as e:
+            app.logger.warning(f"Exception occurred: {e}")
+            pass
+        if output_filename and os.path.exists(output_filename):
+            try:
+                os.remove(output_filename)
+            except Exception:
+                pass
+
+    app.logger.warning(f"test")
+
+    return jsonify(response_data)
 
 
 if __name__ == "__main__":
