@@ -2,6 +2,7 @@ import sys
 import time
 import os
 import pyautogui
+import requests
 
 ALCH_TIMEOUT = 3
 TELE_ALCH_TIMEOUT = 3.2
@@ -55,14 +56,55 @@ def scan():
             os.makedirs("input-images")
         path = os.path.join("input-images", f"screenshot_{int(time.time() * 1000)}.png")
         screenshot.save(path)
+        return path
 
     def scan_interval():
-        take_screenshot()
+        screenshot_path = take_screenshot()
         check_for_stop_condition()
         x, y = pyautogui.position()
         print((x, y))
-        pixel_color = pyautogui.screenshot().getpixel((x, y))
-        print("%02x%02x%02x" % pixel_color)
+        screenshot_img = pyautogui.screenshot()
+        width, height = screenshot_img.size
+        if 0 <= x < width and 0 <= y < height:
+            pixel_color = screenshot_img.getpixel((x, y))
+            print("%02x%02x%02x" % pixel_color)
+        else:
+            print("Mouse position out of screenshot bounds")
+
+        # Use Flask server for template matching
+        template_path = os.path.join("input-images", "login.png")
+        if os.path.exists(template_path):
+            with open(screenshot_path, "rb") as src, open(template_path, "rb") as tmpl:
+                files = {"source": src, "template": tmpl}
+                try:
+                    resp = requests.post(
+                        "http://localhost:5000/detect", files=files, timeout=10
+                    )
+                    if resp.ok:
+                        data = resp.json()
+                        if "x" in data and "y" in data and "output_image" in data:
+                            print("Template matched. Clicking 'Existing User' button.")
+                            # Try to get template width/height from output_image filename if possible
+                            # But ideally, server.py should return width/height in the response
+                            width = data.get("template_width")
+                            height = data.get("template_height")
+                            x = int(data["center_x"])
+                            y = int(data["center_y"])
+                            print(
+                                f"Received x={x}, y={y}, width={width}, height={height}"
+                            )
+                            if width is not None and height is not None:
+                                try:
+                                    print(f"Clicking center at ({x}, {y})")
+                                    pyautogui.moveTo(x, y)
+                                except Exception as e:
+                                    print("Error parsing width/height:", e)
+                                    pyautogui.moveTo(x, y)
+                            else:
+                                pyautogui.moveTo(x, y)
+                            pyautogui.click(button="left")
+                except Exception as e:
+                    print("Error calling server.py:", e)
 
     while True:
         scan_interval()

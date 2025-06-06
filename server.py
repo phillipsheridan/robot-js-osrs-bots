@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import os
 import uuid
 import cv2
-from detect_image import find_image_in_image, draw_match_rectangle
+from detect_image import find_image_in_image, draw
 
 app = Flask(__name__)
 
@@ -38,13 +38,23 @@ def detect():
             source_filename, template_filename
         )
         output_filename = os.path.join(OUTPUT_FOLDER, f"{uuid.uuid4()}.png")
-        draw_match_rectangle(
+        center_x, center_y = draw(
             source_filename, coords, template_width, template_height, output_filename
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    return jsonify({"x": coords[0], "y": coords[1], "output_image": output_filename})
+    return jsonify(
+        {
+            "x": coords[0],
+            "y": coords[1],
+            "output_image": output_filename,
+            "template_width": template_width,
+            "template_height": template_height,
+            "center_x": center_x,
+            "center_y": center_y,
+        }
+    )
 
 
 if __name__ == "__main__":
