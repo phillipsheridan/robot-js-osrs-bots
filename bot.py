@@ -138,6 +138,17 @@ def main():
         print("invalid args")
         return
     if args[0] == "positions":
+        ##
+        #  I am thinking of refactoring scan to "play"- it will take a json object as the "playbook" - which includes step conditions, and an array of "step" that the bot will loop through using the step conditions to guide it. Basically a state machine. And so an example playbook could be:
+        ### {
+        #     "name": "high alch",
+        #     "steps": [ click existing user, click login inputs and login. click high alch, click items, click alch, click stop ],
+        # state conditions: [ "is logged in", "has items to alch", "is at alch interface" ]
+
+        # stop condition: "is login screen detected"
+        ##
+
+        # maybe playbooks can contain common actions too like callback for like login, open-bag, click rune(r), etc.
         scan()
     elif args[0] == "alch":
         loop(alch, ALCH_TIMEOUT)
