@@ -47,6 +47,7 @@ def get_template_center_coordindates(
     center_x = pt1[0] + template_width // 2
     center_y = pt1[1] + template_height // 2
     cv2.circle(source, (center_x, center_y), 8, (0, 255, 0), -1)
+    # uncomment to see the matched template + source image
     # cv2.imwrite(output_path, source)
     return center_x, center_y
 
