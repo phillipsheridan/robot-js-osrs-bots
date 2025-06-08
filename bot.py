@@ -58,7 +58,7 @@ def scan():
         screenshot.save(path)
         return path
 
-    def scan_interval():
+    def click_template(template_name="login.png"):
         screenshot_path = take_screenshot()
         x, y = pyautogui.position()
         print((x, y))
@@ -71,7 +71,7 @@ def scan():
             print("Mouse position out of screenshot bounds")
 
         # Use Flask server for template matching
-        template_path = os.path.join("templates", "login.png")
+        template_path = os.path.join("templates", template_name)
         if os.path.exists(template_path):
             with open(screenshot_path, "rb") as src, open(template_path, "rb") as tmpl:
                 files = {"source": src, "template": tmpl}
@@ -106,7 +106,7 @@ def scan():
                     print("Error calling server.py:", e)
 
     while True:
-        scan_interval()
+        click_template()
         time.sleep(0.2)
 
 
