@@ -65,6 +65,23 @@ def login():
     click_template("password-input.png")
     pyautogui.typewrite(password, interval=0.1)
     click_template("login.png")
+    # move mouse to top left corner of screen to get it tf out the way
+    pyautogui.moveTo(30, 30)
+    time.sleep(10)
+    screenshot = take_screenshot()
+    clickHereToPlayButtonPath = os.path.join("templates", "click-here-to-play.png")
+    if template_found(screenshot, clickHereToPlayButtonPath):
+        click_template("click-here-to-play.png")
+        return True
+    return False
+
+
+def is_logged_out():
+    screenshot = take_screenshot()
+    existingUserPath = os.path.join("templates", "existing-user.png")
+    if template_found(screenshot, existingUserPath):
+        return True
+    return False
 
 
 def take_screenshot():
@@ -123,8 +140,10 @@ def loop(fn, sec):
 
     while True:
         if not logged_in:
-            login()
-            logged_in = True
+            logged_in = login()
+        else:
+            # check for login screen
+            logged_in = not is_logged_out()
         fn()
         rand = sec + (random.randint(1, 6) * random.random())
         time.sleep(rand)
@@ -136,20 +155,8 @@ def main():
         print("invalid args")
         return
     if args[0] == "positions":
-        ##
-        #  I am thinking of refactoring scan to "play"- it will take a json object as the "playbook" - which includes step conditions, and an array of "step" that the bot will loop through using the step conditions to guide it. Basically a state machine. And so an example playbook could be:
-        ### {
-        #     "name": "high alch",
-        #     "steps": [ click existing user, click login inputs and login. click high alch, click items, click alch, click stop ],
-        # state conditions: [ "is logged in", "has items to alch", "is at alch interface" ]
-
-        # stop condition: "is login screen detected"
-        ##
-
-        # maybe playbooks can contain common actions too like callback for like login, open-bag, click rune(r), etc.
         scan()
     elif args[0] == "alch":
-        login()
         loop(alch, ALCH_TIMEOUT)
     elif args[0] == "tele-alch":
         loop(alch_tele_camelot, TELE_ALCH_TIMEOUT)
