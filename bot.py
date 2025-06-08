@@ -76,6 +76,13 @@ def take_screenshot():
     return path
 
 
+from detect_image import (
+    find_image_in_image,
+    get_template_center_coordindates,
+    template_found,
+)
+
+
 def click_template(template_name="login.png"):
     screenshot_path = take_screenshot()
     x, y = pyautogui.position()
@@ -88,38 +95,25 @@ def click_template(template_name="login.png"):
     else:
         print("Mouse position out of screenshot bounds")
 
-    # Use Flask server for template matching
     template_path = os.path.join("templates", template_name)
     if os.path.exists(template_path):
-        with open(screenshot_path, "rb") as src, open(template_path, "rb") as tmpl:
-            files = {"source": src, "template": tmpl}
+        # Strict template match
+        if template_found(screenshot_path, template_path):
             try:
-                resp = requests.post(
-                    "http://localhost:5000/detect", files=files, timeout=10
+                coords, template_width, template_height = find_image_in_image(
+                    screenshot_path, template_path
                 )
-                if resp.ok:
-                    data = resp.json()
-                    if "x" in data and "y" in data and "output_image" in data:
-                        print("Template matched. Clicking thingy.")
-                        # Try to get template width/height from output_image filename if possible
-                        # But ideally, server.py should return width/height in the response
-                        width = data.get("template_width")
-                        height = data.get("template_height")
-                        x = int(data["center_x"])
-                        y = int(data["center_y"])
-                        print(f"Received x={x}, y={y}, width={width}, height={height}")
-                        if width is not None and height is not None:
-                            try:
-                                print(f"Clicking center at ({x}, {y})")
-                                pyautogui.moveTo(x, y)
-                            except Exception as e:
-                                print("Error parsing width/height:", e)
-                                pyautogui.moveTo(x, y)
-                        else:
-                            pyautogui.moveTo(x, y)
-                        pyautogui.click(button="left")
+                # Optionally, draw result and get center
+                center_x, center_y = get_template_center_coordindates(
+                    screenshot_path, coords, template_width, template_height, None
+                )
+                print(f"Template matched. Clicking center at ({center_x}, {center_y})")
+                pyautogui.moveTo(center_x, center_y)
+                pyautogui.click(button="left")
             except Exception as e:
-                print("Error calling server.py:", e)
+                print("Error in template matching logic:", e)
+        else:
+            print("Strict template match not found.")
 
 
 def loop(fn, sec):

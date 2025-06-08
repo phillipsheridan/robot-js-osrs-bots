@@ -18,22 +18,22 @@ def find_image_in_image(source_path: str, template_path: str):
     return max_loc, template.shape[1], template.shape[0]  # (x, y), width, height
 
 
-# def template_found(
-#     source_path: str, template_path: str, threshold: float = 0.99
-# ) -> bool:
-#     """
-#     Returns True if the template is strictly found in the source image.
-#     Uses TM_CCOEFF_NORMED and a strict threshold (default 0.99).
-#     """
-#     source = cv2.imread(source_path)
-#     template = cv2.imread(template_path)
-#     if source is None or template is None:
-#         return False
-#     source_gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
-#     template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-#     result = cv2.matchTemplate(source_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-#     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-#     return max_val >= threshold
+def template_found(
+    source_path: str, template_path: str, threshold: float = 0.99
+) -> bool:
+    """
+    Returns True if the template is strictly found in the source image.
+    Uses TM_CCOEFF_NORMED and a strict threshold (default 0.99).
+    """
+    source = cv2.imread(source_path)
+    template = cv2.imread(template_path)
+    if source is None or template is None:
+        return False
+    source_gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
+    template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+    result = cv2.matchTemplate(source_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    return max_val >= threshold
 
 
 def get_template_center_coordindates(
