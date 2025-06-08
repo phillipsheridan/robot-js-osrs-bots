@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import os
 import uuid
 import cv2
-from detect_image import find_image_in_image, draw
+from detect_image import find_image_in_image, get_template_center_coordindates
 
 app = Flask(__name__)
 
@@ -46,7 +46,7 @@ def detect():
             source_filename, template_filename
         )
         output_filename = os.path.join(OUTPUT_FOLDER, f"{uuid.uuid4()}.png")
-        center_x, center_y = draw(
+        center_x, center_y = get_template_center_coordindates(
             source_filename, coords, template_width, template_height, output_filename
         )
         response_data = {

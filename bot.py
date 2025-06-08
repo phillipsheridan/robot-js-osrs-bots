@@ -20,7 +20,6 @@ STOP_PIXEL_COLOR = "03e9a9"
 
 def alch():
     print("time:", time.ctime())
-    login()
 
 
 def alch_tele_camelot():

@@ -18,7 +18,27 @@ def find_image_in_image(source_path: str, template_path: str):
     return max_loc, template.shape[1], template.shape[0]  # (x, y), width, height
 
 
-def draw(source_path: str, top_left, template_width, template_height, output_path: str):
+# def template_found(
+#     source_path: str, template_path: str, threshold: float = 0.99
+# ) -> bool:
+#     """
+#     Returns True if the template is strictly found in the source image.
+#     Uses TM_CCOEFF_NORMED and a strict threshold (default 0.99).
+#     """
+#     source = cv2.imread(source_path)
+#     template = cv2.imread(template_path)
+#     if source is None or template is None:
+#         return False
+#     source_gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
+#     template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+#     result = cv2.matchTemplate(source_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+#     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+#     return max_val >= threshold
+
+
+def get_template_center_coordindates(
+    source_path: str, top_left, template_width, template_height, output_path: str
+):
     source = cv2.imread(source_path)
     pt1 = top_left
     pt2 = (top_left[0] + template_width, top_left[1] + template_height)
@@ -41,6 +61,8 @@ if __name__ == "__main__":
         source_path, template_path
     )
     output_path = os.path.join("output-images", f"{uuid.uuid4()}.png")
-    (x, y) = draw(source_path, coords, template_width, template_height, output_path)
+    (x, y) = get_template_center_coordindates(
+        source_path, coords, template_width, template_height, output_path
+    )
     print(f"Template found at: x={x}, y={y}")
     print(f"Output image with match highlighted saved as {output_path}")
