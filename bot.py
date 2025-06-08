@@ -20,6 +20,18 @@ STOP_PIXEL_COLOR = "03e9a9"
 
 def alch():
     print("time:", time.ctime())
+    click_template("spellbook.png")
+    pyautogui.moveTo(30, 30)
+    time.sleep(0.2)
+    click_template("high-level-alch-spell.png", 50)
+    time.sleep(0.1)
+    # move mouse 10 pixels up and 10 pixels left from current position
+    x, y = pyautogui.position()
+    pyautogui.moveTo(x - 10, y - 10)
+    # click where the mouse is currently positioned
+    pyautogui.click(button="left")
+
+    pyautogui.moveTo(30, 30)
 
 
 def alch_tele_camelot():
@@ -100,7 +112,7 @@ from detect_image import (
 )
 
 
-def click_template(template_name="login.png"):
+def click_template(template_name="login.png", threshold=0.99):
     screenshot_path = take_screenshot()
     x, y = pyautogui.position()
     print((x, y))
@@ -115,7 +127,7 @@ def click_template(template_name="login.png"):
     template_path = os.path.join("templates", template_name)
     if os.path.exists(template_path):
         # Strict template match
-        if template_found(screenshot_path, template_path):
+        if template_found(screenshot_path, template_path, threshold):
             try:
                 coords, template_width, template_height = find_image_in_image(
                     screenshot_path, template_path
@@ -136,7 +148,7 @@ def click_template(template_name="login.png"):
 def loop(fn, sec):
     import random
 
-    logged_in = False
+    logged_in = not is_logged_out()
 
     while True:
         if not logged_in:
