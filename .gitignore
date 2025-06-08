@@ -3,4 +3,5 @@
 /dist
 /input-images
 /output-images
+/templates
 *.pyc

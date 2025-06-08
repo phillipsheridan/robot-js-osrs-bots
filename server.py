@@ -66,9 +66,8 @@ def detect():
         # Remove all files in input-images and the output file if it exists
         try:
             for f in os.listdir(UPLOAD_FOLDER):
-                app.logger.warning(f"Deleting file: {file_path}")
-
                 file_path = os.path.join(UPLOAD_FOLDER, f)
+                app.logger.warning(f"Deleting file: {file_path}")
 
                 if os.path.isfile(file_path):
                     os.remove(file_path)

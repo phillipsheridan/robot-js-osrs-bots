@@ -71,7 +71,7 @@ def scan():
             print("Mouse position out of screenshot bounds")
 
         # Use Flask server for template matching
-        template_path = os.path.join("input-images", "login.png")
+        template_path = os.path.join("templates", "login.png")
         if os.path.exists(template_path):
             with open(screenshot_path, "rb") as src, open(template_path, "rb") as tmpl:
                 files = {"source": src, "template": tmpl}
