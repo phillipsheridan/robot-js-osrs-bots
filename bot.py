@@ -22,8 +22,7 @@ STOP_PIXEL_COLOR = "03e9a9"
 
 
 def human_like_move(x, y):
-
-    move_duration = random.uniform(0.18, 0.45)
+    move_duration = min(random.uniform(0.18, 0.45), 1.0)  # Cap duration at 1 second
     jitter_x = random.randint(-8, 8)
     jitter_y = random.randint(-8, 8)
     pyautogui.moveTo(
@@ -46,15 +45,15 @@ def move_near_cursor():
 def alch():
     global spellbook_clicked
     print("time:", time.ctime())
-    time.sleep(0.2)
+    time.sleep(0.5)
     if not spellbook_clicked:
         click_template("spellbook.png")
     spellbook_clicked = True
     move_near_cursor()
-    time.sleep(0.3)
-    click_template("high-level-alch-spell.png")
-    time.sleep(0.3)
-    click_template("magic-longbows.png", 0.60)
+    time.sleep(0.5)
+    click_template("high-level-alch-spell.png", 0.90)
+    time.sleep(0.5)
+    click_template("magic-longbows.png", 0.90)
     pyautogui.click(button="left")
     move_near_cursor()
 
@@ -169,7 +168,7 @@ def click_template(template_name="login.png", threshold=0.99):
             except Exception as e:
                 print("Error in template matching logic:", e)
         else:
-            print("Strict template match not found.")
+            print("Strict template match not found: " + template_name)
 
 
 def loop(fn, sec):
