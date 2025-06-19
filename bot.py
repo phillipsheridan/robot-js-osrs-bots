@@ -4,12 +4,15 @@ import os
 import pyautogui
 import requests
 from dotenv import load_dotenv
+import random
 
 load_dotenv()  # Load variables from .env file
 username = os.getenv("user")
 password = os.getenv("password")
 
-ALCH_TIMEOUT = 3
+spellbook_clicked = False
+
+ALCH_TIMEOUT = 2
 TELE_ALCH_TIMEOUT = 3.2
 POSITION_STALL = (589, 605)
 POSITION_ITEMS = (1478, 801)
@@ -18,34 +21,56 @@ STOP_POSITION = (1159, 470)
 STOP_PIXEL_COLOR = "03e9a9"
 
 
-def alch():
-    print("time:", time.ctime())
-    click_template("spellbook.png")
-    pyautogui.moveTo(30, 30)
-    time.sleep(0.2)
-    click_template("high-level-alch-spell.png", 50)
-    time.sleep(0.1)
-    # move mouse 10 pixels up and 10 pixels left from current position
-    x, y = pyautogui.position()
-    pyautogui.moveTo(x - 10, y - 10)
-    # click where the mouse is currently positioned
-    pyautogui.click(button="left")
+def human_like_move(x, y):
 
-    pyautogui.moveTo(30, 30)
+    move_duration = random.uniform(0.18, 0.45)
+    jitter_x = random.randint(-8, 8)
+    jitter_y = random.randint(-8, 8)
+    pyautogui.moveTo(
+        x + jitter_x,
+        y + jitter_y,
+        duration=move_duration,
+        tween=pyautogui.easeInOutQuad,
+    )
+    time.sleep(0.2)
+
+
+def move_near_cursor():
+    time.sleep(0.2)
+    x, y = pyautogui.position()
+    x = x + random.randint(-8, 8)
+    y = y + random.randint(-8, 8)
+    human_like_move(x, y)
+
+
+def alch():
+    global spellbook_clicked
+    print("time:", time.ctime())
+    time.sleep(0.2)
+    if not spellbook_clicked:
+        click_template("spellbook.png")
+    spellbook_clicked = True
+    move_near_cursor()
+    time.sleep(0.3)
+    click_template("high-level-alch-spell.png")
+    time.sleep(0.3)
+    click_template("magic-longbows.png", 0.60)
+    pyautogui.click(button="left")
+    move_near_cursor()
 
 
 def alch_tele_camelot():
     print("time:", time.ctime())
-    pyautogui.moveTo(1615, 882)
+    human_like_move(1615, 882)
     pyautogui.click(button="left")
     time.sleep(0.8)
-    pyautogui.moveTo(1590, 859)
+    human_like_move(1590, 859)
     pyautogui.click(button="left")
 
 
 def steal():
     def steal_stall():
-        pyautogui.moveTo(*POSITION_STALL)
+        human_like_move(*POSITION_STALL)
         print("moved mouse")
         pyautogui.click(button="left")
         print("left clicked")
@@ -53,7 +78,7 @@ def steal():
     def steal_items():
         pyautogui.keyDown("shift")
         print("toggled shift down")
-        pyautogui.moveTo(*POSITION_ITEMS)
+        human_like_move(*POSITION_ITEMS)
         print("moved mouse")
         pyautogui.click(button="left")
         print("left clicked")
@@ -74,11 +99,11 @@ def login():
     click_template("existing-user.png")
     time.sleep(0.2)
     pyautogui.typewrite(username, interval=0.1)
-    click_template("password-input.png")
+    time.sleep(0.2)
+    click_template("password-input.png", 0.50)
     pyautogui.typewrite(password, interval=0.1)
-    click_template("login.png")
-    # move mouse to top left corner of screen to get it tf out the way
-    pyautogui.moveTo(30, 30)
+    click_template("login.png", 0.50)
+    human_like_move(30, 30)
     time.sleep(10)
     screenshot = take_screenshot()
     clickHereToPlayButtonPath = os.path.join("templates", "click-here-to-play.png")
@@ -137,7 +162,9 @@ def click_template(template_name="login.png", threshold=0.99):
                     screenshot_path, coords, template_width, template_height, None
                 )
                 print(f"Template matched. Clicking center at ({center_x}, {center_y})")
-                pyautogui.moveTo(center_x, center_y)
+                human_like_move(center_x, center_y)
+                time.sleep(0.1)  # Small delay before clicking
+                print("Clicking on the template:" + template_name)
                 pyautogui.click(button="left")
             except Exception as e:
                 print("Error in template matching logic:", e)
